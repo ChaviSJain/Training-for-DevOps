@@ -1,0 +1,10 @@
+---
+- name: Hello World Playbook
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+  - name: Print a welcome message
+    debug:
+      msg: "Hello from Ansible on macOS!"

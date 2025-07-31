@@ -1,0 +1,19 @@
+---
+- name: Installing and starting a nginx server
+  hosts: localhost
+
+  tasks:
+   - name: Installing nginx server
+     homebrew:
+      name: nginx
+      state: present
+
+   - name: starting the nginx server
+     community.general.homebrew_services:
+      name: nginx
+      state: present
+   #- name: Stop nginx using homebrew services
+     #community.general.homebrew_services:
+      #name: nginx
+      #state: stopped
+ 
