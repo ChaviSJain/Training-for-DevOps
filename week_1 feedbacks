@@ -1,0 +1,59 @@
+Feedbacks 
+
+1.Understanding of the code app.py - understood and updated in code
+
+2.Understanding IP address and their Ranges, DNS SERVER
+
+  IP ADDRESS
+
+  - An IP address (Internet Protocol address) is like the digital home address of a device on a network.
+  - It helps route data from one device to another (like mail from your laptop to a website server).
+  - Every device on a network must have a unique IP to avoid delivery confusion.
+  - There are two types of IP addresses:
+    - Type	Format	Example
+    - IPv4	Four numbers (0–255) separated by dots	192.168.1.1
+    - IPv6	Eight groups of hexadecimal numbers	2001:0db8:85a3::8a2e:0370:7334
+  - IP Address Classes (IPv4)
+    - IPv4 addresses are divided into classes based on their leading bits and intended size:
+      Class	Range of First Octet	Usage	            Example
+      A	    1 – 126	              Large networks	  10.0.0.1
+      B	    128 – 191	            Medium networks	  172.16.0.1
+      C	    192 – 223	            Small networks	  192.168.1.1
+      D	    224 – 239	            Multicast       	—
+      E	    240 – 255	            Experimental	    —
+  - Reserved IP Ranges (Private Networks)
+    - These IPs are not routable over the public internet — they're used for LANs (Local Area Networks):
+    - Class A: 10.0.0.0 – 10.255.255.255
+    - Class B: 172.16.0.0 – 172.31.255.255
+    - Class C: 192.168.0.0 – 192.168.255.255
+
+  DNS SERVER
+  - DNS (Domain Name System) is like the internet's phone book. It translates human-readable domain names (like google.com) into IP addresses (142.250.72.206).
+  - How It Works:
+    - You type www.example.com into your browser
+    - DNS resolves it to the correct IP address
+    - Your computer connects to that IP
+    - Ex: Google,cloudflare,OpenDNS
+
+SUBNETTING
+- Dividing the network into smaller pieces.
+- helps in managing traffic,improve security and isolate parts of the network.
+
+3.How to run commands without using SUDO
+  - By making using the docker group method
+    - Docker runs as a system service in the background and access to its daemon is restructed for security purpose.
+    - but users in the docker group are allowed to use the docker commands without the elevated priviledges.
+
+  - Therefore, to add vboxuser to the docker group, we run the command 
+  - " sudo usermod -aG docker $USER " 
+    - usermod modifies user account
+    - aG docker adds user to docker gorup
+  - we then apply the group changes by running the commans
+  - "newgrp docker"
+  - we can now run docker commands without using SUDO.
+
+4. Docker Compose
+  - Docker Compose is a tool that lets you:
+    - Describe your entire app environment (services, networks, volumes) in one file (docker-compose.yml)
+    - Start everything with just one command:
+      - docker compose up
