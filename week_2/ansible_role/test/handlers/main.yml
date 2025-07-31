@@ -1,0 +1,6 @@
+#SPDX-License-Identifier: MIT-0
+---
+- name: restart flask app
+  shell: pkill -f app.py && nohup python3 /opt/{{ flask_app_name }}/app.py &
+
+# handlers file for test

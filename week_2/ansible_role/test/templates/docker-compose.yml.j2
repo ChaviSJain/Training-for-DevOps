@@ -1,0 +1,10 @@
+version: '3'
+services:
+  web:
+    image: python:3.9
+    volumes:
+      - .:/app
+    working_dir: /app
+    command: python3 app.py
+    ports:
+      - "{{ flask_app_port }}:5000"
