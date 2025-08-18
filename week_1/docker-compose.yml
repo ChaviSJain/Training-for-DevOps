@@ -1,0 +1,19 @@
+# Define the version of the Docker Compose file format you're using
+version: '3.8'
+
+# Define the services (containers) that make up your app
+services:
+  # This is the name of your service; can be anything (like 'app', 'web', 'backend')
+  # This file launches a single container named web.
+  web:
+    # Tells Docker Compose to build the image from the Dockerfile in the current directory
+    build: .
+
+    # Maps port 5000 on your machine to port 5000 inside the container
+    # Format is: "host_port:container_port"
+    ports:
+      - "5000:5000"
+
+    # Ensures the container always restarts if it stops, crashes, or the machine reboots
+    restart: always
+

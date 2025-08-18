@@ -1,0 +1,17 @@
+# Use version 3 of the Docker Compose file format
+version: '3'
+
+services:
+  web:  # Define a service named "web"
+    image: python:3.9  # Use the official Python 3.9 image from Docker Hub
+    
+    build: .
+    volumes:
+      - .:/app  # Mount the current host directory to /app in the container
+
+    working_dir: /app  # Set the working directory inside the container to /app
+
+    command: python3 app.py  # Run the Flask app using this command inside the container
+
+    ports:
+      - "{{ flask_app_port }}:5000"  # Map host port (from Ansible variable) to container's port 5000

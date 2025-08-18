@@ -1,0 +1,119 @@
+Feedbacks 
+
+1.Understanding of the code app.py - understood and updated in code
+
+2.Understanding IP address and their Ranges, DNS SERVER
+
+  IP ADDRESS
+
+  - An IP address (Internet Protocol address) is like the digital home address of a device on a network.
+  - It helps route data from one device to another (like mail from your laptop to a website server).
+  - Every device on a network must have a unique IP to avoid delivery confusion.
+  - There are two types of IP addresses:
+    - Type	Format	Example
+    - IPv4	Four numbers (0–255) separated by dots	192.168.1.1
+    - IPv6	Eight groups of hexadecimal numbers	2001:0db8:85a3::8a2e:0370:7334
+  - IP Address Classes (IPv4)
+    - IPv4 addresses are divided into classes based on their leading bits and intended size:
+      Class	Range of First Octet	Usage	            Example
+      A	    1 – 126	              Large networks	  10.0.0.1
+      B	    128 – 191	            Medium networks	  172.16.0.1
+      C	    192 – 223	            Small networks	  192.168.1.1
+      D	    224 – 239	            Multicast       	—
+      E	    240 – 255	            Experimental	    —
+  - Reserved IP Ranges (Private Networks)
+    - These IPs are not routable over the public internet — they're used for LANs (Local Area Networks):
+    - Class A: 10.0.0.0 – 10.255.255.255
+    - Class B: 172.16.0.0 – 172.31.255.255
+    - Class C: 192.168.0.0 – 192.168.255.255
+
+  DNS SERVER
+  - DNS (Domain Name System) is like the internet's phone book. It translates human-readable domain names (like google.com) into IP addresses (142.250.72.206).
+  - How It Works:
+    - You type www.example.com into your browser
+    - DNS resolves it to the correct IP address
+    - Your computer connects to that IP
+    - Ex: Google,cloudflare,OpenDNS
+
+SUBNETTING
+- Dividing the network into smaller pieces.
+- helps in managing traffic,improve security and isolate parts of the network.
+
+3.How to run commands without using SUDO
+  - By making using the docker group method
+    - Docker runs as a system service in the background and access to its daemon is restructed for security purpose.
+    - but users in the docker group are allowed to use the docker commands without the elevated priviledges.
+
+  - Therefore, to add vboxuser to the docker group, we run the command 
+  - " sudo usermod -aG docker $USER " 
+    - usermod modifies user account
+    - aG docker adds user to docker gorup
+  - we then apply the group changes by running the commans
+  - "newgrp docker"
+  - we can now run docker commands without using SUDO.
+
+4. Docker Compose
+  - Docker Compose is like an orchestra conductor for your multi-container applications 🐳🎶 — it lets you define and run all your services with a single command using a YAML file.
+  📦 What It Is
+    - Docker Compose is a tool that:
+      - Defines multi-container Docker applications (e.g., web server + database + cache).
+      - Uses a docker-compose.yml file to describe each container’s:
+        - Image or build instructions
+        - Environment variables
+        - Network and volume settings
+        - Port mappings
+  ⚙️ How It Works
+    - Configuration: You write a docker-compose.yml file with all the services your app needs.
+    - Launch: Run docker-compose up to spin up everything at once.
+    - Teardown: Run docker-compose down to stop and remove the containers.
+
+  💡 Why Use It?
+    - Simplicity: One file, one command — and your whole stack is up.
+    - Consistency: Ensures identical setups across dev, staging, or CI pipelines.
+    - Scalability: Add more services (Redis, Postgres, worker queues) easily.
+    - Isolation: Keeps each service in its own container with clean boundaries.
+
+  - Docker Compose is a tool that lets you:
+    - Describe your entire app environment (services, networks, volumes) in one file (docker-compose.yml)
+    - Start everything with just one command:
+      - docker compose up
+    - Previously we ran the command "docker run -d -p 5000:5000 --restart=always flask-docker-app" for our flask app , but now a Yaml file (docker-compose.yml" will have these details and we'll run the command for docker compose
+      "docker compose up -d" 
+    - Now this will :
+      - Start your container in the background
+      - Automatically restart it on reboot (because of restart: always)
+      - Let you manage it with friendly commands like:
+        - docker compose stop
+        - docker compose ps
+        - docker compose logs
+
+5. OWASP 
+  - OWASP stands for the Open Worldwide Application Security Project — a nonprofit foundation focused on improving software security 🌐🔐
+
+  🧠 What OWASP Does
+     OWASP provides:
+      - Freely available tools and resources for developers and security professionals
+      - Educational materials like cheat sheets, guides, and training
+      - Community-driven projects to raise awareness and improve security practices
+  It’s widely respected in the cybersecurity world and often referenced in compliance standards like PCI DSS and NIST.
+
+  📊 OWASP Top 10
+     One of its most famous contributions is the OWASP Top 10, a regularly updated list of the most critical web application security risks. The latest version includes:
+
+      Rank	Risk Category	                                Description
+      A01	  Broken Access Control	                        Improper restrictions on user actions
+      A02	  Cryptographic Failures	                      Weak or missing encryption
+      A03	  Injection	                                    SQL, NoSQL, and other code injection flaws
+      A04	  Insecure Design	                              Flawed architecture or logic
+      A05	  Security Misconfiguration	                    Default settings, exposed files, etc.
+      A06	  Vulnerable and Outdated Components	          Using libraries with known issues
+      A07	  Identification and Authentication Failures	  Weak login mechanisms
+      A08	  Software and Data Integrity Failures	        Trusting unverified sources
+      A09	  Security Logging and Monitoring Failures	    Poor visibility into attacks
+      A10	  Server-Side Request Forgery (SSRF)	          Server fetches malicious external resources
+      
+  🧰 Other OWASP Projects
+     ZAP (Zed Attack Proxy): A free tool for finding vulnerabilities in web apps
+     Cheat Sheet Series: Concise best practices for secure coding
+     Developer Guide: A reference for building secure applications
+     SAMM: Software Assurance Maturity Model for improving security posture

@@ -1,0 +1,35 @@
+---
+# install ansible-galaxy collection install community.docker
+- name: Deploy Flask App via Docker  # The name of the playbook — just a label
+  hosts: localhost                   # Target machine — here it’s the local Mac
+  connection: local                  # Tells Ansible to run tasks locally, not via SSH
+  gather_facts: false                # Skips gathering system info (faster for simple tasks)
+
+  vars:                              # Define reusable variables for clarity and flexibility
+    app_name: flaskapp               # Directory name for the Flask app
+    docker_image: flaskapp:v1        # Docker image name and tag
+    docker_container: flaskapp_container  # Name of the running container
+    app_port: 5000 
+    host_port: 5001                  # Port the Flask app runs on (inside and outside container)
+
+  tasks:
+    - name: Copy Flask app files     # Task to copy your Flask app and Dockerfile to a temp location
+      copy:
+        src: ./flaskapp/             # Source directory on your Mac (relative to playbook)
+        dest: /tmp/{{ app_name }}    # Destination folder on the target machine (local or remote)
+        mode: '0755'                 # File permissions — owner can read, write, execute
+
+    - name: Build Docker image       # Task to build the Docker image from the copied app folder
+      community.docker.docker_image: # Docker image module from the Ansible community collection
+        name: "{{ docker_image }}"   # Image name and tag from the variable above
+        build:
+          path: "/tmp/{{ app_name }}" # Build context — where Dockerfile and app.py are located
+        source: build                # Specifies to build the image rather than pulling it
+
+    - name: Run Docker container     # Task to run the Docker container
+      community.docker.docker_container: # Module to manage containers
+        name: "{{ docker_container }}"   # Container name
+        image: "{{ docker_image }}"      # Image to run
+        state: started                   # Ensures the container is running
+        published_ports:                 # Maps container’s port to host’s port for access
+          - "{{ host_port }}:{{ app_port }}" # Maps host 5000 to container 5000 (port forwarding)

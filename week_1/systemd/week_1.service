@@ -1,0 +1,19 @@
+# basic metadata and dependencies for the service
+#Automatic Startup on Boot
+#reliable restart
+[Unit]                                               
+Description=Flask App using Docker Compose              # Description of the service for human readability
+Requires=docker.service                                 # Ensures Docker service is running before starting this one
+After=docker.service                                    # Specifies the order: this starts *after* Docker service
+
+# Defines hpw the service behaves
+[Service]                                               
+WorkingDirectory=/home/cjain/week_1           # Directory where Docker Compose will run
+ExecStart=/usr/bin/docker compose up --build --detach   # Command to start containers in the background (rebuilds if needed)
+ExecStop=/usr/bin/docker compose down                   # Command to stop containers 
+Restart=always                                          # Automatically restart the service if it crashes or stops
+TimeoutStartSec=0                                       # Starts the service immediately without any delay
+
+# Controls when the service should be enabled
+[Install]                                              
+WantedBy=multi-user.target                              # Makes this service start during normal multi-user boot phase

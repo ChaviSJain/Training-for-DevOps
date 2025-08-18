@@ -1,0 +1,20 @@
+---
+- name: Download files
+  hosts: localhost
+  connection: local
+  gather_facts: false
+
+  tasks:
+    # Task to dowload python installer
+    - name: Download Python installer
+      # this task uses the get_url module to download a file from a URL
+      get_url: 
+        # the URL of the file to download
+        url: https://www.python.org/ftp/python/3.13.5/python-3.13.5-macos11.pkg
+        # destination path where the filoe will be saved
+        dest: /Users/cjain/Downloads/python-3.13.5-macos11.pkg
+        # sets the file permissions to allow read,write, and execute for everyone
+        mode: '0777'
+
+
+

@@ -1,0 +1,9 @@
+---
+- name: Running the Flask app through roles
+  hosts: localhost
+  become: yes
+  connection: local
+  gather_facts: yes
+  
+  roles:
+    - test

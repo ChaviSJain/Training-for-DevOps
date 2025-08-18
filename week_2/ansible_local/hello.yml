@@ -1,0 +1,18 @@
+---
+# Marks the beginning of a YAML document
+# Describes the playbook
+- name: Hello World Playbook
+  # Specifies the hosts this playbook will run on
+  hosts: localhost
+  # Indicates that this playbook is intended to run on the local machine
+  connection: local
+  # Ensures that no facts are gathered to speed up execution
+  gather_facts: false
+  
+  # defines the tasks to be executed in this playbook
+  tasks:
+  # Task to print a welcome message
+  - name: Print a welcome message
+    #  task uses the debug module to output a message
+    debug:
+      msg: "Hello from Ansible on macOS!"

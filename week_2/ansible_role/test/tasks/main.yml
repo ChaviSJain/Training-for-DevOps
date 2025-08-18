@@ -1,0 +1,43 @@
+---
+# Platform-specific package installation
+- name: Update apt cache (Debian)
+  apt:
+    update_cache: yes
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: Install packages with apt (Debian)
+  apt:
+    name:
+      - python3-pip
+      - docker.io
+    state: present
+  when: ansible_facts['os_family'] == "Debian"
+
+- name: Install Homebrew (macOS)
+  become: false
+  shell: '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"'
+  when: ansible_facts['os_family'] == "Darwin"
+
+- name: Install packages with Homebrew (macOS)
+  become: false
+  homebrew:
+    name:
+      - python3
+      - docker
+      - wget
+    state: present
+  when: ansible_facts['os_family'] == "Darwin"
+
+# Create app directory
+# Creates a directpry,not copying files!
+- name: Create app folder
+  file:
+    path: /opt/{{ flask_app_name }}
+    state: directory
+    mode: '0755'
+
+# Copy docker-compose.yml template
+- name: Deploy docker-compose file
+  template:
+    src: docker-compose.yml.j2
+    dest: /opt/{{ flask_app_name }}/docker-compose.yml

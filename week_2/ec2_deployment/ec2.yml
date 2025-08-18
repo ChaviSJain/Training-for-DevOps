@@ -1,0 +1,48 @@
+---
+# First Play: Launch EC2
+- name: Launch EC2 instance
+  hosts: localhost
+  connection: local
+  gather_facts: false
+  vars:
+    key_name: flask-deploy-key
+    instance_type: t2.micro
+    image: ami-0f918f7e67a3323f0  # replace with your Ubuntu 24 AMI
+    region: ap-south-1             # adjust region
+    security_group: sg-0a883f9ca9d48325f
+    subnet_id: subnet-0cc96fe779238446a
+  tasks:
+    - name: Launch EC2
+      amazon.aws.ec2_instance:
+        name: flask-ansible
+        key_name: "{{ key_name }}"
+        instance_type: "{{ instance_type }}"
+        image_id: "{{ image }}"
+        region: "{{ region }}"
+        wait: true
+        security_group: "{{ security_group }}"
+        subnet_id: "{{ subnet_id }}"
+        network:
+          assign_public_ip: true
+      register: ec2
+
+    - name: Add new instance to host group
+      add_host:
+        name: "{{ item.public_ip_address }}"
+        groups: flask_servers
+      loop: "{{ ec2.instances }}"
+
+    - name: Wait for SSH to come up
+      wait_for:
+        host: "{{ item.public_ip_address }}"
+        port: 22
+        timeout: 300
+      loop: "{{ ec2.instances }}"
+
+# Second Play: Configure Flask App on EC2
+- name: Configure Flask server
+  hosts: flask_servers
+  remote_user: ubuntu
+  become: true
+  roles:
+    - test   # your role inside ansible_role2/test
