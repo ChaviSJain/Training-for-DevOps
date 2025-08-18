@@ -1,0 +1,13 @@
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.backup
+crash.log
+terraform.tfvars
+
+# Build artifacts
+flask_layer.zip
+flask_lambda.zip
+python/
+__pycache__/
+*.pyc
