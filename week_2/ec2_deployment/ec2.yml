@@ -5,7 +5,8 @@
   connection: local                           # Connect locally instead of via SSH
   gather_facts: false                         # No need to gather facts for localhost
   vars:                                       # Define variables used in this play
-    key_name: flask-deploy-key                # AWS Key Pair for SSH access to EC2
+    key_name: flask-deploy-key
+    pem_file: "{{ playbook_dir }}/flask-deploy-key.pem"                # AWS Key Pair for SSH access to EC2
     instance_type: t2.micro                   # EC2 instance type (small free-tier eligible VM)
     image_id: ami-0f918f7e67a3323f0           # Ubuntu AMI ID (must replace with valid one)
     region: ap-south-1                        # AWS region to deploy in (Mumbai region here)
@@ -27,7 +28,9 @@
     - name: Add new instance to host group
       add_host:                               # Add dynamically created instance to inventory
         name: "{{ item.public_ip_address }}"  # Use instance's public IP as hostname
-        groups: flask_servers                 # Put it inside 'flask_servers' group
+        groups: flask_servers 
+        ansible_user: ubuntu
+        ansible_ssh_private_key_file: "{{ pem_file }}"                # Put it inside 'flask_servers' group
       loop: "{{ ec2.instances }}"             # Loop through created instances (usually 1)
 
     - name: Wait for SSH to be ready
@@ -41,7 +44,6 @@
 # Second Play: Configure Flask server
 - name: Configure Flask server
   hosts: flask_servers                        # Target all hosts in 'flask_servers' group
-  remote_user: ubuntu                         # SSH into instance as 'ubuntu' user (default for Ubuntu AMIs)
-  become: true                                # Run tasks with sudo/root privileges
+  remote_user: ubuntu                         # SSH into instance as 'ubuntu' user (default for Ubuntu AMIs)                              # Run tasks with sudo/root privileges
   roles:
     - test                                    # Apply the 'test' role (your Flask + Docker deployment role)

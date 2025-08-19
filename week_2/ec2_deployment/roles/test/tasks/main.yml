@@ -157,6 +157,7 @@
   args:
     chdir: "{{ app_dir }}"
   ignore_errors: yes
+  become: true
 
 
 # Step 20: Remove any container using port 5000 (avoid conflicts)
