@@ -1,5 +1,5 @@
 ---
-# Step 1: Remove old/broken Ansible PPA if it exists (prevents package conflicts)
+# Step 1: Remove old / broken Ansible PPA if it exists (prevents package conflicts)
 - name: Remove broken Ansible PPA (if exists)
   apt_repository:
     repo: 'ppa:ansible/ansible'
