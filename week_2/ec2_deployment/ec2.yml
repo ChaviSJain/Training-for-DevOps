@@ -1,48 +1,47 @@
 ---
-# First Play: Launch EC2
-- name: Launch EC2 instance
-  hosts: localhost
-  connection: local
-  gather_facts: false
-  vars:
-    key_name: flask-deploy-key
-    instance_type: t2.micro
-    image: ami-0f918f7e67a3323f0  # replace with your Ubuntu 24 AMI
-    region: ap-south-1             # adjust region
-    security_group: sg-0a883f9ca9d48325f
+# First Play: Provision EC2 instance
+- name: Provision EC2 instance                # Name of the play
+  hosts: localhost                            # Run this playbook on localhost (control node)
+  connection: local                           # Connect locally instead of via SSH
+  gather_facts: false                         # No need to gather facts for localhost
+  vars:                                       # Define variables used in this play
+    key_name: flask-deploy-key                # AWS Key Pair for SSH access to EC2
+    instance_type: t2.micro                   # EC2 instance type (small free-tier eligible VM)
+    image_id: ami-0f918f7e67a3323f0           # Ubuntu AMI ID (must replace with valid one)
+    region: ap-south-1                        # AWS region to deploy in (Mumbai region here)
+    security_group: sg-0a883f9ca9d48325f      # Security group to attach to EC2
     subnet_id: subnet-0cc96fe779238446a
+    
   tasks:
-    - name: Launch EC2
-      amazon.aws.ec2_instance:
-        name: flask-ansible
-        key_name: "{{ key_name }}"
-        instance_type: "{{ instance_type }}"
-        image_id: "{{ image }}"
-        region: "{{ region }}"
-        wait: true
-        security_group: "{{ security_group }}"
-        subnet_id: "{{ subnet_id }}"
-        network:
-          assign_public_ip: true
-      register: ec2
+    - name: Launch EC2 instance
+      amazon.aws.ec2_instance:                # AWS module to create/manage EC2 instances
+        name: flask-server                    # Give the instance a name tag
+        key_name: "{{ key_name }}"            # Use the defined key pair
+        instance_type: "{{ instance_type }}"  # Set EC2 instance type
+        image_id: "{{ image_id }}"            # Ubuntu AMI ID
+        region: "{{ region }}"                # Region where EC2 will be created
+        security_groups: [ "{{ security_group }}" ]  # Attach security group(s)
+        wait: true                            # Wait until the instance is fully up
+      register: ec2                           # Save the output (instance details) into 'ec2'
 
     - name: Add new instance to host group
-      add_host:
-        name: "{{ item.public_ip_address }}"
-        groups: flask_servers
-      loop: "{{ ec2.instances }}"
+      add_host:                               # Add dynamically created instance to inventory
+        name: "{{ item.public_ip_address }}"  # Use instance's public IP as hostname
+        groups: flask_servers                 # Put it inside 'flask_servers' group
+      loop: "{{ ec2.instances }}"             # Loop through created instances (usually 1)
 
-    - name: Wait for SSH to come up
-      wait_for:
-        host: "{{ item.public_ip_address }}"
-        port: 22
-        timeout: 300
-      loop: "{{ ec2.instances }}"
+    - name: Wait for SSH to be ready
+      ansible.builtin.wait_for:               # Wait until SSH port is available
+        host: "{{ item.public_ip_address }}"  # Target instance public IP
+        port: 22                              # Port 22 = SSH
+        delay: 10                             # Wait 10 seconds before first check
+        timeout: 300                          # Fail if SSH not available within 5 mins
+      loop: "{{ ec2.instances }}"             # Loop through created instances
 
-# Second Play: Configure Flask App on EC2
+# Second Play: Configure Flask server
 - name: Configure Flask server
-  hosts: flask_servers
-  remote_user: ubuntu
-  become: true
+  hosts: flask_servers                        # Target all hosts in 'flask_servers' group
+  remote_user: ubuntu                         # SSH into instance as 'ubuntu' user (default for Ubuntu AMIs)
+  become: true                                # Run tasks with sudo/root privileges
   roles:
-    - test   # your role inside ansible_role2/test
+    - test                                    # Apply the 'test' role (your Flask + Docker deployment role)
