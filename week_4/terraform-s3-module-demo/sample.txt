@@ -1,0 +1,2 @@
+Hi!
+I'm a sample folder being uploadeed to the S3 bucket.
