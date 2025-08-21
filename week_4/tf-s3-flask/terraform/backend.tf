@@ -7,3 +7,7 @@ terraform {
     encrypt        = true
   }
 }
+#successfully uses that table to:
+#Write a lock entry (LockID)
+#Prevent concurrent state changes
+#Release the lock when done
