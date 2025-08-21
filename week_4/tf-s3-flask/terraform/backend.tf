@@ -1,6 +1,6 @@
 terraform {
   backend "s3" {
-    bucket         = "terraform-state-demo-0.1"
+    bucket         = "terraform-state-demo-v1"
     key            = "lambda-demo/terraform.tfstate"
     region         = "ap-south-1"
     use_lockfile = true
