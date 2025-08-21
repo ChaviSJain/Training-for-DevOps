@@ -36,7 +36,6 @@ resource "aws_lambda_function" "flask_lambda" {
   # Ensures Lambda updates when the ZIP file changes
 }
 
-
 resource "aws_apigatewayv2_api" "http_api" {
   name          = "flask-http-api"  # Name of the API Gateway
   protocol_type = "HTTP"  # Uses HTTP API (v2) for lightweight routing
