@@ -3,11 +3,6 @@ variable "bucket_name" {
   type        = string
 }
 
-variable "acl" {
-  description = "Access control list (e.g., private, public-read)"
-  type        = string
-  default     = "private"
-}
 
 variable "enable_public_read" {
   description = "Enable public read access to bucket objects"

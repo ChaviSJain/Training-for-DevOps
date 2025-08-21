@@ -1,9 +1,9 @@
 variable "bucket_name" {
-  default = "chavi-demo-bucket"
+  default = "v1-demo-bucket"
 }
 
 variable "enable_public_read" {
-  default = true
+  default = false
 }
 
 variable "tags" {
