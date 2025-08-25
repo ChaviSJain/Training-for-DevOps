@@ -35,8 +35,8 @@ jobs:
       # Package Lambda
       - name: Zip Lambda
         run: |
-          mkdir -p artifacts
-          cd .github/workflows/lambda
+          mkdir -p $GITHUB_WORKSPACE/artifacts
+          cd $GITHUB_WORKSPACE/.github/workflows/lambda
 
           python -m pip install --upgrade pip
 
@@ -45,13 +45,13 @@ jobs:
             pip install -r requirements.txt -t package/
             cp handler.py package/
             cd package
-            zip -r ../../artifacts/lambda.zip .
+            zip -r $GITHUB_WORKSPACE/artifacts/lambda.zip .
           else
-            zip -r ../../artifacts/lambda.zip handler.py
+            zip -r $GITHUB_WORKSPACE/artifacts/lambda.zip handler.py
           fi
 
-          cd $GITHUB_WORKSPACE
-          echo "Lambda package created at artifacts/lambda.zip"
+          echo "✅ Lambda package created at $GITHUB_WORKSPACE/artifacts/lambda.zip"
+
 
       # AWS auth via OIDC
       - name: Configure AWS credentials
