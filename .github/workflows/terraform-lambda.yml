@@ -27,7 +27,7 @@ jobs:
       - name: Zip Lambda
         run: |
           mkdir -p artifacts
-          cd lambda
+          cd .github/workflows/lambda
           python -m pip install --upgrade pip
           # If you have deps, create a package dir and zip them; otherwise zip the handler only:
           zip -r ../artifacts/lambda.zip handler.py
