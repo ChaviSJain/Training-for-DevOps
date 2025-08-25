@@ -1,4 +1,5 @@
 name: terraform-lambda
+
 on:
   push:
     branches: [ main ]
@@ -22,14 +23,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      # Cache pip for faster builds
+      - name: Cache pip
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+
       # Package Lambda
       - name: Zip Lambda
         run: |
           mkdir -p artifacts
           cd .github/workflows/lambda
+
           python -m pip install --upgrade pip
-          # If requirements.txt exists, install into package/
+
           if [ -f requirements.txt ]; then
+            mkdir -p package
             pip install -r requirements.txt -t package/
             cp handler.py package/
             cd package
@@ -37,6 +49,9 @@ jobs:
           else
             zip -r ../../artifacts/lambda.zip handler.py
           fi
+
+          cd $GITHUB_WORKSPACE
+          echo "Lambda package created at artifacts/lambda.zip"
 
       # AWS auth via OIDC
       - name: Configure AWS credentials
@@ -49,9 +64,18 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
 
+      # Cache .terraform dir
+      - name: Cache Terraform
+        uses: actions/cache@v4
+        with:
+          path: terraform/.terraform
+          key: ${{ runner.os }}-terraform-${{ hashFiles('terraform/*.tf') }}
+          restore-keys: |
+            ${{ runner.os }}-terraform-
+
       - name: Terraform Init
         working-directory: terraform
-        run: terraform init
+        run: terraform init -upgrade
 
       - name: Terraform Fmt
         working-directory: terraform
@@ -73,4 +97,5 @@ jobs:
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main'
         working-directory: terraform
-        run: terraform apply -auto-approve plan.out
+        run: |
+          terraform apply -auto-approve plan.out
