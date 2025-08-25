@@ -6,4 +6,4 @@ jobs:
     permissions: {}
     steps:
      - uses: actions/checkout@v5
-     - run: eco "Runner is $(uname -a)"
+     - run: echo "Runner is $(uname -a)"
