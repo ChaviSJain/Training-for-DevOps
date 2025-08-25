@@ -3,5 +3,5 @@ variable "region" {
 }
 
 variable "lambda_zip_path" {
-  default = "./build/lambda.zip"
+  default = "artfacts/lambda.zip"
 }
