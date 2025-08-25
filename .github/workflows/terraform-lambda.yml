@@ -18,10 +18,9 @@ jobs:
     concurrency:
       group: tf-lambda-${{ github.ref }}
       cancel-in-progress: false
-    # environment: prod
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v4
 
       # Package Lambda
       - name: Zip Lambda
@@ -29,8 +28,15 @@ jobs:
           mkdir -p artifacts
           cd .github/workflows/lambda
           python -m pip install --upgrade pip
-          # If you have deps, create a package dir and zip them; otherwise zip the handler only:
-          zip -r artifacts/lambda.zip handler.py
+          # If requirements.txt exists, install into package/
+          if [ -f requirements.txt ]; then
+            pip install -r requirements.txt -t package/
+            cp handler.py package/
+            cd package
+            zip -r ../../artifacts/lambda.zip .
+          else
+            zip -r ../../artifacts/lambda.zip handler.py
+          fi
 
       # AWS auth via OIDC
       - name: Configure AWS credentials
@@ -68,6 +74,3 @@ jobs:
         if: github.ref == 'refs/heads/main'
         working-directory: terraform
         run: terraform apply -auto-approve plan.out
-        env:
-            TF_VAR_lambda_zip_path: artifacts/lambda.zip
-        
