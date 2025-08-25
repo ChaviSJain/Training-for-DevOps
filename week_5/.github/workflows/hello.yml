@@ -1,0 +1,9 @@
+name: hello-actions
+on: [push]
+jobs: 
+  hello:
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+     - uses: actions/checkout@v5
+     - run: eco "Runner is $(uname -a)"
