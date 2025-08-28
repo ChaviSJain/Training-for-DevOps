@@ -14,32 +14,31 @@
     subnet_id: subnet-0cc96fe779238446a
     
   tasks:
-    - name: Launch EC2 instance
-      amazon.aws.ec2_instance:                # AWS module to create/manage EC2 instances
-        name: flask-server                    # Give the instance a name tag
-        key_name: "{{ key_name }}"            # Use the defined key pair
-        instance_type: "{{ instance_type }}"  # Set EC2 instance type
-        image_id: "{{ image_id }}"            # Ubuntu AMI ID
-        region: "{{ region }}"                # Region where EC2 will be created
-        security_groups: [ "{{ security_group }}" ]  # Attach security group(s)
-        wait: true                            # Wait until the instance is fully up
-      register: ec2                           # Save the output (instance details) into 'ec2'
+  - name: Launch EC2 instance
+    amazon.aws.ec2_instance:
+      name: flask-server
+      key_name: "{{ key_name }}"
+      instance_type: "{{ instance_type }}"
+      image_id: "{{ image_id }}"
+      region: "{{ region }}"
+      security_groups: [ "{{ security_group }}" ]
+      wait: true
+    register: ec2
 
-    - name: Add new instance to host group
-      add_host:                               # Add dynamically created instance to inventory
-        name: "{{ item.public_ip_address }}"  # Use instance's public IP as hostname
-        groups: flask_servers 
-        ansible_user: ubuntu
-        ansible_ssh_private_key_file: "{{ pem_file }}"                # Put it inside 'flask_servers' group
-      loop: "{{ ec2.instances }}"             # Loop through created instances (usually 1)
+  - name: Add new instance to host group
+    add_host:
+      name: "{{ ec2.instances[0].public_ip_address }}"   # Only first instance
+      groups: flask_servers
+      ansible_user: ubuntu
+      ansible_ssh_private_key_file: "{{ pem_file }}"
 
-    - name: Wait for SSH to be ready
-      ansible.builtin.wait_for:               # Wait until SSH port is available
-        host: "{{ item.public_ip_address }}"  # Target instance public IP
-        port: 22                              # Port 22 = SSH
-        delay: 10                             # Wait 10 seconds before first check
-        timeout: 300                          # Fail if SSH not available within 5 mins
-      loop: "{{ ec2.instances }}"             # Loop through created instances
+  - name: Wait for SSH to be ready
+    ansible.builtin.wait_for:
+      host: "{{ ec2.instances[0].public_ip_address }}"   # Only first instance
+      port: 22
+      delay: 10
+      timeout: 300
+      # Loop through created instances
 
 # Second Play: Configure Flask server
 - name: Configure Flask server
