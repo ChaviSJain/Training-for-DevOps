@@ -1,0 +1,58 @@
+#!/bin/bash
+set -e
+
+echo "🔍 Validating EC2 deployment..."
+
+# Fetch instance ID using Terraform output (if you expose it)
+INSTANCE_ID=$(terraform output -raw instance_id 2>/dev/null || true)
+
+# If not available via output, fallback to tag-based lookup
+if [ -z "$INSTANCE_ID" ]; then
+  echo "📡 Looking up EC2 instance by tag..."
+  INSTANCE_ID=$(aws ec2 describe-instances \
+    --filters "Name=tag:Name,Values=EC2" \
+    --query "Reservations[*].Instances[*].InstanceId" \
+    --output text)
+fi
+
+if [ -z "$INSTANCE_ID" ]; then
+  echo "❌ EC2 instance not found."
+  exit 1
+fi
+
+echo "✅ EC2 instance ID: $INSTANCE_ID"
+
+# Check instance state
+STATE=$(aws ec2 describe-instances \
+  --instance-ids "$INSTANCE_ID" \
+  --query "Reservations[*].Instances[*].State.Name" \
+  --output text)
+
+echo "📦 EC2 instance state: $STATE"
+
+if [ "$STATE" != "running" ]; then
+  echo "❌ Instance is not running."
+  exit 1
+fi
+
+# Fetch public IP
+PUBLIC_IP=$(aws ec2 describe-instances \
+  --instance-ids "$INSTANCE_ID" \
+  --query "Reservations[*].Instances[*].PublicIpAddress" \
+  --output text)
+
+if [ -z "$PUBLIC_IP" ]; then
+  echo "❌ No public IP assigned."
+  exit 1
+fi
+
+echo "🌐 EC2 Public IP: $PUBLIC_IP"
+
+# Optional: ping or curl the instance
+echo "📡 Attempting to reach EC2 via ping..."
+ping -c 3 "$PUBLIC_IP" || echo "⚠️ Ping failed — check security group rules."
+
+# Optional: SSH check (requires key and user)
+# ssh -i your-key.pem ec2-user@$PUBLIC_IP
+
+echo "✅ EC2 validation complete."
